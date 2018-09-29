@@ -1,0 +1,9 @@
+{
+	"name": "thanos.io",
+	"version": "0.0.1",
+	"description": "Oh snap!",
+	"dependencies": {
+		"express": "^4.16.3",
+		"socket.io": "^2.1.1"
+	}
+}
