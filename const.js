@@ -1,0 +1,7 @@
+STONES = ["POWER", "SPACE", "REALITY", "SOUL", "TIME", "MIND"];
+MAX_SHIPS = 30;
+
+export {
+	STONES,
+	MAX_SHIPS
+};
