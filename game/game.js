@@ -1,9 +1,8 @@
-import { Ship } from './ship.js';
-import { Socket } from './socket.js'
+import { Ship } from './sprites/ship.js';
+import { Bullet } from './sprites/bullet.js'
 
 class Game {
 	constructor() {
-		this.socket = new Socket(this);
 
 	}
 

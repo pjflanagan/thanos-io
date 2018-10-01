@@ -1,5 +1,3 @@
-import { Game } from './modules/game.js'
-
 /**
  * @constant
  */
@@ -12,19 +10,5 @@ const STATE = {
 	START: 1,
 	PLAY: 2,
 	GAMEOVER: 3
-};
-
-/**
- * @event onload
- */
-
-window.onload = function () {
-	var game = new Phaser.Game(
-		DIMS.W,
-		DIMS.H,
-		Phaser.AUTO,
-		'',
-		new Game()
-	);
 };
 

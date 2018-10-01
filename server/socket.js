@@ -2,7 +2,7 @@ var express = require('express')
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var state = require('./state.js');
+var state = require('./game.js');
 
 io.on('connection', function (socket) {
 	const clientID = socket.client.id;
