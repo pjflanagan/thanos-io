@@ -1,5 +1,3 @@
-import { Ship } from './modules/ship.js';
-import { Socket } from './modules/socket.js'
 import { Game } from './modules/game.js'
 
 /**
@@ -26,7 +24,7 @@ window.onload = function () {
 		DIMS.H,
 		Phaser.AUTO,
 		'',
-		Game
+		new Game()
 	);
 };
 

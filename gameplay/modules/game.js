@@ -1,13 +1,21 @@
-const Game = {
-	preload: function () {
+import { Ship } from './ship.js';
+import { Socket } from './socket.js'
 
-	},
+class Game {
+	constructor() {
+		this.socket = new Socket(this);
 
-	create: function () {
+	}
 
-	},
+	preload() {
 
-	update: function () {
+	}
+
+	create() {
+
+	}
+
+	update() {
 
 	}
 };

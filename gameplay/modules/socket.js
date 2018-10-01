@@ -6,6 +6,10 @@ class Socket {
 		this.socket.on('event', function () {
 			game.do();
 		});
+
+		this.socket.on('welcome', function (data) {
+			console.log(data);
+		})
 	}
 
 	emit(event, value) {
