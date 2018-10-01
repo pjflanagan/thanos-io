@@ -1,4 +1,4 @@
-class Socket {
+class ClientSocket {
 	constructor(game) {
 		this.socket = io();
 		this.game = game;
@@ -18,4 +18,4 @@ class Socket {
 	}
 }
 
-export { Socket };
+export { ClientSocket };

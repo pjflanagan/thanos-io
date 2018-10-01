@@ -1,23 +1,28 @@
-var express = require('express')
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var state = require('./game.js');
+class ServerSocket {
+	constructor(io) {
+		this.io = io;
+		this.io.on('connection', (socket) => {
+			let self = this;
+			self.newConnection(socket);
 
-io.on('connection', function (socket) {
-	const clientID = socket.client.id;
-	io.to(`${clientID}`).emit('welcome', clientID);
-	state.addUser(clientID);
-	console.log('Add User:', clientID);
+			socket.on('key', function (data) {
+				io.emit('key', data);
+			});
 
-	socket.on('key', function (data) {
-		io.emit('key', data);
-	});
+			socket.on('disconnect', function () {
+				self.removeConnection(socket);
+			});
+		});
+	}
 
-	socket.on('disconnect', function () {
-		console.log('Remove User:', clientID);
-	});
-});
+	newConnection(socket) {
+		console.log('Add User:', socket.id);
+		this.io.to(`${socket.id}`).emit('welcome', socket.id);
+	}
 
+	removeConnection(socket) {
+		console.log('Remove User:', socket.id);
+	}
+}
 
-module.exports = { express, app, http }
+export { ServerSocket }

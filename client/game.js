@@ -1,14 +1,15 @@
-import { Socket } from './socket.js'
+import { ClientSocket } from './socket.js'
+import { Game } from '../game/game.js'
 
-/**
- * @event onload
+/** 
+ * @class ClientGame @extends Game
  */
-window.onload = function () {
-	var game = new Phaser.Game(
-		DIMS.W,
-		DIMS.H,
-		Phaser.AUTO,
-		'',
-		new Game()
-	);
-};
+class ClientGame extends Game {
+	constructor() {
+		super();
+		this.socket = new ClientSocket(this);
+	}
+
+}
+
+export { ClientGame };
