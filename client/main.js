@@ -1,4 +1,4 @@
-import { ClientGame } from './game.js';
+import { Game } from './game/game.js';
 
 /**
  * @event onload
@@ -9,6 +9,6 @@ window.onload = function () {
 		800, // DIMS.H,
 		Phaser.AUTO,
 		'',
-		new ClientGame()
+		new Game()
 	);
 };
