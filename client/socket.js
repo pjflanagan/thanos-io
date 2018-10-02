@@ -14,13 +14,17 @@ class ClientSocket {
 
     this.socket.on('addNewUser', function(data){
       self.addUser(data);
-      self.shareSelf();
+      self.shareSelf(data);
     });
+
+    this.socket.on('removeUser', function(data){
+      self.removeUser(data);
+    })
   }
 
   addSelf(data){
     console.log('addSelf:', data);
-    // this.game.addSelf
+    this.game.addSelf(data);
   }
   
   addUser(data){
@@ -28,8 +32,16 @@ class ClientSocket {
     // this.game.addUser(data);
   }
 
-  shareSelf(){
-    this.socket.emit('shareSelf', this.game.shareSelf());
+  shareSelf(data){
+    this.socket.emit('shareSelf', {
+      to: data.i,
+      user: { hey: 'me' } // this.game.shareSelf());
+    }); 
+  }
+
+  removeUser(data){
+    console.log("removeUser:", data);
+    // this.game.removeUser(data);
   }
 
 	

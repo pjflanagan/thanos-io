@@ -33,13 +33,13 @@ class ServerSocket {
   
   sendConnection(socket, user) {
     socket.broadcast.emit('addNewUser', user);
-    socket.to(`${user.i}`).emit('addSelf', user);
+    this.io.to(`${user.i}`).emit('addSelf', user);
   }
 
   // disconnect
 	recvDisconnect(socket) {
     console.log('recvDisconnect:', socket.id);
-    this.state.recvDisconnect(socket);
+    this.state.disconnect(socket);
   }
   
   sendDisconnect(socket) {
@@ -57,7 +57,7 @@ class ServerSocket {
   }
 
   sendShareSelf(socket, data){
-    socket.to(`${data.to}`).emit('addUser', data);
+    socket.to(`${data.to}`).emit('addUser', data.user);
   }
 }
 

@@ -11,12 +11,12 @@ class State {
 
   connection(socket){
     const userID = socket.id;
-    const data = defaultUser(userID);
+    const user = defaultUser(userID);
     this.users.push(userID);
-    this.server.sendConnection(socket, data);
+    this.server.sendConnection(socket, user);
   }
 
-  recvDisconnect(socket){
+  disconnect(socket){
     // this.users.remove user userID
     this.server.sendDisconnect(socket);
   }

@@ -20,8 +20,8 @@ const defaultUser = function(userID){
   return {
     i: userID, // id
     p: { // position
-      x: Math.random(),
-      y: Math.random(),
+      x: Math.random() * 1000,
+      y: Math.random() *  800,
       a: Math.random() // angle
     },
     v: { // velocity
