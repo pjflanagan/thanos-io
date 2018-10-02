@@ -13,8 +13,10 @@ var shipProps = {
  * @class Ship @extends Phaser.Sprite
  */
 var Ship = function(game, data) {
-	Phaser.Sprite.call(this, game, data.p.x, data.p.y, 'imgShip');
-	   
+  Phaser.Sprite.call(this, game, data.p.x, data.p.y, 'imgShip');
+  
+  this.state = data;
+  
   this.anchor.set(0.5, 0.5);
   this.angle = data.p.a;
 	  
@@ -37,6 +39,10 @@ Ship.prototype.death = function(){
 	// animate
 	this.kill();
 };
+
+Ship.prototype.getState = function(){
+  return this.state;
+}
 
 
 export { Ship };

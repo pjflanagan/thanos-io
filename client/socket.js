@@ -29,13 +29,13 @@ class ClientSocket {
   
   addUser(data){
     console.log("addUser:", data);
-    // this.game.addUser(data);
+    this.game.addUser(data);
   }
 
   shareSelf(data){
     this.socket.emit('shareSelf', {
       to: data.i,
-      user: { hey: 'me' } // this.game.shareSelf());
+      user: this.game.shareSelf() 
     }); 
   }
 

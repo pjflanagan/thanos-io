@@ -1,12 +1,14 @@
 import { ClientSocket } from './socket.js';
 import { Ship } from './sprites/ship.js';
+import { GAME } from '../shared/const.js';
 
 /**
  * @event onload
  */
-
 window.onload = function () {
-	var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game');
+  let W = $(window).width();
+  let H = $(window).height();
+	const game = new Phaser.Game(W, H, Phaser.CANVAS, 'game');
 	game.state.add('Main', App.Main);
 	game.state.start('Main');
 };
@@ -33,6 +35,7 @@ App.Main.prototype = {
 	},
 	
 	create : function(){
+    this.game.world.setBounds(0,0, GAME.WORLD.WIDTH, GAME.WORLD.HEIGHT);
     this.ShipGroup = this.game.add.group();
     this.addSocket();
 	},
@@ -48,5 +51,14 @@ App.Main.prototype = {
   addSelf: function(data){
     this.self = new Ship(this, data);
     this.ShipGroup.add(this.self);
+    this.game.camera.follow(this.self);
+  },
+
+  shareSelf: function(){
+    return this.self.getState();
+  },
+
+  addUser: function(data){
+    this.ShipGroup.add(new Ship(this, data));
   }
 };

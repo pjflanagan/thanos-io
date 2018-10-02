@@ -20,7 +20,7 @@ app.get('/', function (req, res) {
 
 // app.use(compression({}));
 app.use('/client', express.static(path.resolve(__dirname + '/../client')));
-app.use('/game', express.static(path.resolve(__dirname + '/../shared')));
+app.use('/shared', express.static(path.resolve(__dirname + '/../shared')));
 
 new ServerSocket(io);
 

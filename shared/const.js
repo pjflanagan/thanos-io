@@ -13,16 +13,20 @@ const STATE = {
 };
 const GAME = {
   STONES: ["POWER", "SPACE", "REALITY", "SOUL", "TIME", "MIND"],
-	MAX_SHIPS: 30
+  MAX_SHIPS: 30,
+  WORLD: {
+    WIDTH: 5000,
+    HEIGHT: 5000
+  }
 };
 
 const defaultUser = function(userID){
   return {
     i: userID, // id
     p: { // position
-      x: Math.random() * 1000,
-      y: Math.random() *  800,
-      a: Math.random() // angle
+      x: Math.floor(Math.random() * GAME.WORLD.WIDTH),
+      y: Math.floor(Math.random() * GAME.WORLD.HEIGHT),
+      a: Math.random() * 180 // angle
     },
     v: { // velocity
       x: 0, 
@@ -39,4 +43,4 @@ const defaultUser = function(userID){
   }
 }
 
-export { defaultUser };
+export { defaultUser, GAME };
