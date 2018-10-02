@@ -15,8 +15,8 @@ const GAME = {
   STONES: ["POWER", "SPACE", "REALITY", "SOUL", "TIME", "MIND"],
   MAX_SHIPS: 30,
   WORLD: {
-    WIDTH: 1000,
-    HEIGHT: 1000
+    WIDTH: 5000,
+    HEIGHT: 5000
   }
 };
 

@@ -24,6 +24,8 @@ app.use('/shared', express.static(path.resolve(__dirname + '/../shared')));
 
 new ServerSocket(io);
 
+// TODO: make a debug option so you can test on multiple computers
+// https://stackoverflow.com/questions/30712141/connect-to-localhost3000-from-another-computer-expressjs-nodejs
 server.listen(port, () => {
 	console.log('[INFO] Listening on *:' + port);
 });

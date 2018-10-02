@@ -3,11 +3,14 @@
 
 import { defaultUser } from '../shared/const.js'
 
-class State {
+class Room {
   constructor(server){
     this.server = server;
     this.users = [];
   }
+
+  // size - size of room
+  // high scores - high scores of the room
 
   connection(socket){
     const userID = socket.id;
@@ -17,9 +20,11 @@ class State {
   }
 
   disconnect(socket){
-    // this.users.remove user userID
+    this.users = this.users.filter((userID) => {
+      return userID !== socket.id;
+    });
     this.server.sendDisconnect(socket);
   }
 }
 
-export { State };
+export { Room };

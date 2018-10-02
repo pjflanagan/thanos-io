@@ -1,5 +1,7 @@
 
-import { Math } from '/shared/math.js';
+Math.radians = function (degrees) {
+	return degrees * Math.PI / 180; // Converts from degrees to radians
+};
 
 var shipProps = {
 	acceleration: 320,
@@ -15,13 +17,15 @@ var shipProps = {
 /**
  * @class Ship @extends Phaser.Sprite
  */
-var Ship = function(game, data) {
+var Ship = function(app, game, data) {
   Phaser.Sprite.call(this, game, data.p.x, data.p.y, 'imgShip');
-  
+  this.app = app;
+  this.game = game;
   this.state = data;
+  this.keys = data.k;
 
   this.anchor.set(0.5, 0.5);
-  this.angle = data.p.a;
+  this.angle = 90; 
 	  
   // add flap animation and start to play it
   // this.index = index;
@@ -30,8 +34,8 @@ var Ship = function(game, data) {
 	// this.animations.add('gasOff', [0]);
 
 	// enable physics on the Ship
-  this.game.physics.arcade.enableBody(this);
-	this.body.drag.set(shipProps.drag);
+	this.game.physics.enable(this, Phaser.Physics.ARCADE);
+  this.body.drag.set(shipProps.drag);
 	this.body.maxVelocity.set(shipProps.maxVelocity);
 };
 
@@ -39,18 +43,19 @@ Ship.prototype = Object.create(Phaser.Sprite.prototype);
 Ship.prototype.constructor = Ship;
 
 Ship.prototype.update = function(){
-  if (this.state.k.u)
+  if (this.state.k.u) { // FIXME: no idea where this state is being changed to make this run
+    console.log(this.state.k.u);
     this.gasOn();
-  else 
-    this.gasOff();
+  }
+  else this.gasOff();
   
-  if (this.state.k.l) this.rotate(1);
+  if (this.state.k.l === this.state.k.r) this.rotate(.5);
 	else if (this.state.k.r) this.rotate(0);
-	else this.rotate(.5);
+	else this.rotate(1);
 }
 
 Ship.prototype.gasOn = function(){
-	// this.animations.play('gasOn', 1, true);
+  // this.animations.play('gasOn', 1, true);
   this.game.physics.arcade.accelerationFromRotation(
     Math.radians(this.body.rotation), 
     shipProps.acceleration, 
@@ -79,18 +84,18 @@ Ship.prototype.getState = function(){
     p: { 
       x: this.body.x,
       y: this.body.y,
-      a: this.body.angle // FIXME:
+      a: this.body.rotation
     },
     v: { // velocity
       x: this.body.velocity.x,
       y: this.body.velocity.y, 
-      a: this.body.angularVelocity
+      a: this.body.angularVelocity // cut this data size down by making it 1, 0, or -1
     },
     a: {
       x: this.body.acceleration.x, // acceleration
       y: this.body.acceleration.y
     },
-    h: 100, // health
+    h: 100, // health this.health (Health is a Phaser property)
     k: { // keys
       u: this.state.k.u, // up
       l: this.state.k.l, // left
@@ -100,38 +105,61 @@ Ship.prototype.getState = function(){
 }
 
 Ship.prototype.sendKeyNoRotation = function(){
-  if(this.state.k.r || this.state.k.l){
-    this.state.k.r = false;
-    this.state.k.l = false;
-    this.game.sendStateChange();
+  if(this.keys.r || this.keys.l){
+    this.keys.r = false;
+    this.keys.l = false;
+    this.app.sendKeyChange();
   }
 }
 
 Ship.prototype.sendKeyLeft = function(){
-  if(!this.state.k.l){
-    this.state.k.r = false;
-    this.state.k.l = true;
-    this.game.sendStateChange();
+  console.log(this.keys);
+  if(!this.keys.l){
+    this.keys.r = false;
+    this.keys.l = true;
+    this.app.sendKeyChange();
   }
 }
 
 Ship.prototype.sendKeyRight = function(){
-  if(!this.state.k.r){
-    this.state.k.r = true;
-    this.state.k.l = false;
-    this.game.sendStateChange();
+  console.log(this.keys);
+  if(!this.keys.r){ // use keys here to avoid multiple sends by comparing to state
+    this.keys.r = true;
+    this.keys.l = false;
+    this.app.sendKeyChange();
   }
 }
 
-Ship.prototype.sendKeyUp = function(isDown) {
-  if(this.state.k.u !== isDown){
-    this.state.k.u = isDown;
-    this.game.sendStateChange();
+Ship.prototype.sendKeyUpActive = function(isDown) {
+  if(!this.keys.u){
+    this.keys.u = true;
+    this.app.sendKeyChange();
   }
 }
 
-Ship.prototype.recvStateChange = function(data){
-  this.state = data;
+Ship.prototype.sendKeyUpInactive = function(){
+  if(this.keys.u){
+    this.keys.u = false;
+    this.app.sendKeyChange();
+  }
+}
+
+Ship.prototype.recvKeyChange = function(keys) {
+  console.log('Keys:', keys);
+  this.keys = keys;
+  // this.state.k = keys;
+}
+
+Ship.prototype.recvStateUpdate = function(data){ 
+  this.position.x = data.p.x;
+  this.position.y = data.p.y;
+  this.body.rotation = data.p.a;
+  this.body.velocity.x = data.v.x;
+  this.body.velocity.y = data.v.y;
+  this.body.angularVelocity = data.v.a;
+  // this.body.acceleration.x = data.a.x;
+  // this.bdoy.acceleration.y = data.a.y;
+  // this.state = data;
 }
 
 

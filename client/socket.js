@@ -1,61 +1,53 @@
 class ClientSocket {
-	constructor(game) {
+	constructor(app) {
 		this.socket = io();
-    this.game = game;
+    this.app = app; 
     const self = this;
 
-		this.socket.on('addSelf', function (data) {
-			self.addSelf(data);
-    });
-    
-    this.socket.on('addUser', function(data){
-      self.addUser(data);
-    })
-
-    this.socket.on('addNewUser', function(data){
+		this.socket.on('addSelf', (data) => self.addSelf(data));
+    this.socket.on('addUser', (data) => self.addUser(data))
+    this.socket.on('addNewUser', (data) => {
       self.addUser(data);
       self.shareSelf(data);
     });
 
-    this.socket.on('removeUser', function(data){
-      self.removeUser(data);
-    });
+    this.socket.on('death', (data) => self.removeUser(data));
 
-    this.socket.on('stateChange', function(data){
-      self.recvStateChange(data);
-    });
+    this.socket.on('keyChange', (data) => self.recvKeyChange(data));
   }
 
   addSelf(data){
-    console.log('addSelf:', data);
-    this.game.addSelf(data);
+    // console.log('addSelf:', data);
+    this.app.addSelf(data);
   }
   
   addUser(data){
-    console.log("addUser:", data);
-    this.game.addUser(data);
+    // console.log("addUser:", data);
+    this.app.addUser(data);
   }
 
   shareSelf(data){
     this.socket.emit('shareSelf', {
       to: data.i,
-      user: this.game.shareSelf() 
+      user: this.app.shareSelf() 
     }); 
   }
 
-  sendStateChange(data){
-    console.log('sendStateChange:', data);
-    this.socket.emit('stateChange', data);
+  sendKeyChange(data){
+    // console.log('sendKeyChange:', data);
+    this.socket.emit('keyChange', data);
   }
 
-  recvStateChange(data){
-    console.log('recvStateChange:', data);
-    this.game.recvStateChange(data);
+  recvKeyChange(data){
+    // console.log('recvKeyChange:', data);
+    // this.app.recvKeyChange(data);
   }
 
-  removeUser(data){
-    console.log("removeUser:", data);
-    // this.game.removeUser(data);
+  removeUser(userID){ 
+    // right now data is just the user id but 
+    // it should also have who killed them to keep score
+    // console.log("removeUser:", data);
+    this.app.removeUser(userID);
   }
 
 	

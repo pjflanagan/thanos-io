@@ -32,17 +32,18 @@ App.Main.prototype = {
       '/client/assets/img_bullet.png', 
       18, 18, 3
     );
+
+    this.game.load.image('bg', '/client/assets/img_bg.png');
 	},
 	
 	create : function(){
     this.game.world.setBounds(0,0, GAME.WORLD.WIDTH, GAME.WORLD.HEIGHT);
-    this.game.stage.backgroundColor = "#1C1C1C"; // set a black color for the background of the stage
+    this.game.add.tileSprite(0, 0, GAME.WORLD.WIDTH, GAME.WORLD.HEIGHT, 'bg');
 		this.game.stage.disableVisibilityChange = true; // keep game running if it loses the focus
     this.game.physics.startSystem(Phaser.Physics.ARCADE); // start the Phaser arcade physics engine
     
     this.ShipGroup = this.game.add.group();
     this.addSocket();
-
 
 		// create keys for a human to play
 		this.keyLeft = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -63,31 +64,35 @@ App.Main.prototype = {
   },
 
   userInput: function(){
-    if(!this.self)
-      return;
+    if(!this.self) return;
+
     if (this.keyLeft.isDown === this.keyRight.isDown) this.self.sendKeyNoRotation();
     else if (this.keyLeft.isDown) this.self.sendKeyLeft();
 		else this.self.sendKeyRight();
+    
+    if (this.keyThrust.isDown) this.self.sendKeyUpActive();
+    else this.self.sendKeyUpInactive();
 		
-	  this.self.sendKeyUp(this.keyThrust.isDown);
-		
-		// if (this.keyFire.isDown) ship.shoot();
+		// if (this.keyFire.isDown) this.self.sendFire(); // if fireable then send a shot
   },
 
-  sendStateChange: function(){
-    this.socket.sendStateChange(this.shareSelf());
+  sendKeyChange: function(){
+    this.socket.sendKeyChange({
+      i: this.self.state.i,
+      k: this.self.keys
+    });
   },
 
-  recvStateChange: function(data){
+  recvKeyChange: function(data){
     this.ShipGroup.forEach(function(ship){
       if(ship.state.i === data.i){
-        ship.recvStateChange(data);
+        ship.recvKeyChange(data.k);
       }
     });
   },
 
   addSelf: function(data){
-    this.self = new Ship(this, data);
+    this.self = new Ship(this, this.game, data);
     this.ShipGroup.add(this.self);
     this.game.camera.follow(this.self);
   },
@@ -97,6 +102,13 @@ App.Main.prototype = {
   },
 
   addUser: function(data){
-    this.ShipGroup.add(new Ship(this, data));
+    this.ShipGroup.add(new Ship(this, this.game, data));
+  },
+
+  removeUser: function(userID){
+    this.ShipGroup.forEach((ship) => {
+      if (ship.state.i === userID)
+        ship.death();
+    });
   }
 };

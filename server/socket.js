@@ -1,76 +1,60 @@
-import { State } from './state.js'
+import { Room } from './room.js'
 // https://socket.io/docs/emit-cheatsheet/
 
 class ServerSocket {
 	constructor(io) {
-    this.addState(new State(this)); // this will allow us to make multiple rooms
+    this.addRoom(new Room(this));
 
     this.io = io;
 		this.io.on('connection', (socket) => {
 			const self = this;
 			self.recvConnection(socket);
 
-			socket.on('disconnect', function () {
-				self.recvDisconnect(socket);
-      });
-      
-      socket.on('shareSelf', function(data) {
-        self.recvShareSelf(socket, data);
-      });
-
-      socket.on('stateChange', function(data){
-        self.recvStateChange(data);
-      });
+			socket.on('disconnect', () => self.recvDisconnect(socket));
+      socket.on('shareSelf', (data) => self.shareSelf(socket, data));
+      socket.on('keyChange', (data) => self.keyChange(data));
 		});
   }
   
-  addState(state){
-    // server socket should have multiple games this.rooms.push(room)
-    this.state = state;
+  addRoom(room){
+    this.room = room; // server socket should have multiple games this.rooms.push(room)
   }
 
-  // connection
+  // connect
 	recvConnection(socket) {
-    console.log('recvConnection:', socket.id);
-    this.state.connection(socket);
+    console.log('connection:', socket.id);
+    this.room.connection(socket);
   }
-  
-  sendConnection(socket, user) {
+
+  sendConnection(socket, user){
     socket.broadcast.emit('addNewUser', user);
     this.io.to(`${user.i}`).emit('addSelf', user);
   }
 
   // disconnect
 	recvDisconnect(socket) {
-    console.log('recvDisconnect:', socket.id);
-    this.state.disconnect(socket);
+    console.log('disconnect:', socket.id);
+    this.room.disconnect(socket);
   }
-  
-  sendDisconnect(socket) {
-    this.sendDeath(socket);
+
+  sendDisconnect(socket){
+    this.death(socket);
   }
 
   // death
-  sendDeath(socket){
-    socket.emit('death', socket.id);
+  death(socket){
+    console.log('death:', socket.id);
+    this.io.emit('death', socket.id);
   }
 
   // share self
-  recvShareSelf(socket, data){
-    this.sendShareSelf(socket, data);
-  }
-
-  sendShareSelf(socket, data){
+  shareSelf(socket, data){
     socket.to(`${data.to}`).emit('addUser', data.user);
   }
 
-  // state change
-  recvStateChange(data){
-    this.sendStateChange(data);
-  }
-
-  sendStateChange(data){
-    this.io.emit('stateChange', data);
+  // key change
+  keyChange(data){
+    this.io.emit('keyChange', data);
   }
 }
 
