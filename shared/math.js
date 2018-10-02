@@ -1,3 +1,5 @@
+var Math = Math || {};
+
 Math.radians = function (degrees) {
 	return degrees * Math.PI / 180; // Converts from degrees to radians
 };

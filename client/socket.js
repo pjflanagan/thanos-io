@@ -19,7 +19,11 @@ class ClientSocket {
 
     this.socket.on('removeUser', function(data){
       self.removeUser(data);
-    })
+    });
+
+    this.socket.on('stateChange', function(data){
+      self.recvStateChange(data);
+    });
   }
 
   addSelf(data){
@@ -37,6 +41,16 @@ class ClientSocket {
       to: data.i,
       user: this.game.shareSelf() 
     }); 
+  }
+
+  sendStateChange(data){
+    console.log('sendStateChange:', data);
+    this.socket.emit('stateChange', data);
+  }
+
+  recvStateChange(data){
+    console.log('recvStateChange:', data);
+    this.game.recvStateChange(data);
   }
 
   removeUser(data){

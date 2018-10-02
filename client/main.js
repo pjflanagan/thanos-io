@@ -36,16 +36,54 @@ App.Main.prototype = {
 	
 	create : function(){
     this.game.world.setBounds(0,0, GAME.WORLD.WIDTH, GAME.WORLD.HEIGHT);
+    this.game.stage.backgroundColor = "#1C1C1C"; // set a black color for the background of the stage
+		this.game.stage.disableVisibilityChange = true; // keep game running if it loses the focus
+    this.game.physics.startSystem(Phaser.Physics.ARCADE); // start the Phaser arcade physics engine
+    
     this.ShipGroup = this.game.add.group();
     this.addSocket();
+
+
+		// create keys for a human to play
+		this.keyLeft = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    this.keyRight = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    this.keyThrust = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    this.keyFire = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	},
 	
 	update : function(){		
-
+    this.ShipGroup.forEach(function(ship){
+      ship.update();
+    });
+    this.userInput();
   },
   
   addSocket: function(){
     this.socket = new ClientSocket(this);
+  },
+
+  userInput: function(){
+    if(!this.self)
+      return;
+    if (this.keyLeft.isDown === this.keyRight.isDown) this.self.sendKeyNoRotation();
+    else if (this.keyLeft.isDown) this.self.sendKeyLeft();
+		else this.self.sendKeyRight();
+		
+	  this.self.sendKeyUp(this.keyThrust.isDown);
+		
+		// if (this.keyFire.isDown) ship.shoot();
+  },
+
+  sendStateChange: function(){
+    this.socket.sendStateChange(this.shareSelf());
+  },
+
+  recvStateChange: function(data){
+    this.ShipGroup.forEach(function(ship){
+      if(ship.state.i === data.i){
+        ship.recvStateChange(data);
+      }
+    });
   },
 
   addSelf: function(data){

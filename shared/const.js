@@ -15,8 +15,8 @@ const GAME = {
   STONES: ["POWER", "SPACE", "REALITY", "SOUL", "TIME", "MIND"],
   MAX_SHIPS: 30,
   WORLD: {
-    WIDTH: 5000,
-    HEIGHT: 5000
+    WIDTH: 1000,
+    HEIGHT: 1000
   }
 };
 
@@ -33,14 +33,17 @@ const defaultUser = function(userID){
       y: 0,
       a: 0
     },
-    a: 0, // acceleration
+    a: {
+      x: 0, // acceleration
+      y: 0
+    },
     h: 100, // health
     k: { // keys
       u: false, // up
       l: false, // left
       r: false // right
     }
-  }
+  };
 }
 
 export { defaultUser, GAME };

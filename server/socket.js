@@ -16,7 +16,11 @@ class ServerSocket {
       
       socket.on('shareSelf', function(data) {
         self.recvShareSelf(socket, data);
-      })
+      });
+
+      socket.on('stateChange', function(data){
+        self.recvStateChange(data);
+      });
 		});
   }
   
@@ -58,6 +62,15 @@ class ServerSocket {
 
   sendShareSelf(socket, data){
     socket.to(`${data.to}`).emit('addUser', data.user);
+  }
+
+  // state change
+  recvStateChange(data){
+    this.sendStateChange(data);
+  }
+
+  sendStateChange(data){
+    this.io.emit('stateChange', data);
   }
 }
 
