@@ -91,6 +91,18 @@ App.Main.prototype = {
     });
   },
 
+  sendStateUpdate: function(){
+    this.socket.sendStateUpdate(this.self.getState());
+  },
+
+  recvStateUpdate: function(data){
+    this.ShipGroup.forEach(function(ship){
+      if(ship.state.i === data.i){
+        ship.recvStateUpdate(data);
+      }
+    })
+  },
+
   addSelf: function(data){
     this.self = new Ship(this, this.game, data);
     this.ShipGroup.add(this.self);

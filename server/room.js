@@ -1,29 +1,35 @@
 // I don't think you need to save every user's state, just the fact
 // that they exist
 
-import { defaultUser } from '../shared/const.js'
+import { defaultUserState } from '../shared/const.js'
 
 class Room {
   constructor(server){
     this.server = server;
-    this.users = [];
+    this.userStates = {};
+    this.interval = setInterval(() => this.reportState(), 10);
   }
 
   // size - size of room
   // high scores - high scores of the room
 
   connection(socket){
-    const userID = socket.id;
-    const user = defaultUser(userID);
-    this.users.push(userID);
-    this.server.sendConnection(socket, user);
+    const userState = defaultUserState(socket.id);
+    this.userStates[userState.i] = userState;
+    this.server.sendConnection(socket, userState);
   }
 
   disconnect(socket){
-    this.users = this.users.filter((userID) => {
-      return userID !== socket.id;
-    });
+    delete this.userStates[socket.id]
     this.server.sendDisconnect(socket);
+  }
+
+  updateState(data){
+    this.userState[data.id] = data;
+  }
+
+  reportState(){
+    this.server.reportState(this.userStates);
   }
 }
 

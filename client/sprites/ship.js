@@ -21,32 +21,37 @@ var Ship = function(app, game, data) {
   Phaser.Sprite.call(this, game, data.p.x, data.p.y, 'imgShip');
   this.app = app;
   this.game = game;
+
+  // this.liveState = data;
+  // this.tempState = data;
   this.state = data;
-  this.keys = data.k;
+  this.keys = { u: data.k.u, l: data.k.l, r: data.k.r };
 
   this.anchor.set(0.5, 0.5);
-  this.angle = 90; 
+  this.angle = data.p.a; 
 	  
-  // add flap animation and start to play it
   // this.index = index;
 	// var i=index*2;
-  // this.animations.add('gasOn', [1]);
-	// this.animations.add('gasOff', [0]);
+  this.animations.add('gasOn', [1]);
+	this.animations.add('gasOff', [0]);
 
 	// enable physics on the Ship
 	this.game.physics.enable(this, Phaser.Physics.ARCADE);
-  this.body.drag.set(shipProps.drag);
-	this.body.maxVelocity.set(shipProps.maxVelocity);
+  //this.body.drag.set(shipProps.drag);
+  this.body.collideWorldBounds = true;
+  //this.body.maxVelocity.set(shipProps.maxVelocity);
+  
+  // let self = this;
+  // this.interval = setInterval( () => {
+  //   self.app.sendStateUpdate();
+  // }, 100);
 };
 
 Ship.prototype = Object.create(Phaser.Sprite.prototype);
 Ship.prototype.constructor = Ship;
 
 Ship.prototype.update = function(){
-  if (this.state.k.u) { // FIXME: no idea where this state is being changed to make this run
-    console.log(this.state.k.u);
-    this.gasOn();
-  }
+  if (this.state.k.u) this.gasOn();
   else this.gasOff();
   
   if (this.state.k.l === this.state.k.r) this.rotate(.5);
@@ -55,16 +60,22 @@ Ship.prototype.update = function(){
 }
 
 Ship.prototype.gasOn = function(){
-  // this.animations.play('gasOn', 1, true);
+  this.animations.play('gasOn', 1, true);
+  // this.game.physics.arcade.velocityFromRotation( 
+  //   Math.radians(this.body.rotation), 
+  //   shipProps.maxVelocity, 
+  //   this.body.velocity
+  // );
   this.game.physics.arcade.accelerationFromRotation(
     Math.radians(this.body.rotation), 
-    shipProps.acceleration, 
+    shipProps.acceleration / 2, 
     this.body.acceleration
   );
 }
 
 Ship.prototype.gasOff = function(){
-	// this.animations.play('gasOff', 1, true);
+  this.animations.play('gasOff', 1, true);
+  // this.body.velocity.set(0);
 	this.body.acceleration.set(0);
 }
 
@@ -105,6 +116,7 @@ Ship.prototype.getState = function(){
 }
 
 Ship.prototype.sendKeyNoRotation = function(){
+  // use keys here to avoid multiple sends by comparing to state
   if(this.keys.r || this.keys.l){
     this.keys.r = false;
     this.keys.l = false;
@@ -113,7 +125,6 @@ Ship.prototype.sendKeyNoRotation = function(){
 }
 
 Ship.prototype.sendKeyLeft = function(){
-  console.log(this.keys);
   if(!this.keys.l){
     this.keys.r = false;
     this.keys.l = true;
@@ -122,8 +133,7 @@ Ship.prototype.sendKeyLeft = function(){
 }
 
 Ship.prototype.sendKeyRight = function(){
-  console.log(this.keys);
-  if(!this.keys.r){ // use keys here to avoid multiple sends by comparing to state
+  if(!this.keys.r){ 
     this.keys.r = true;
     this.keys.l = false;
     this.app.sendKeyChange();
@@ -145,21 +155,20 @@ Ship.prototype.sendKeyUpInactive = function(){
 }
 
 Ship.prototype.recvKeyChange = function(keys) {
-  console.log('Keys:', keys);
   this.keys = keys;
-  // this.state.k = keys;
+  this.state.k = keys;
 }
 
 Ship.prototype.recvStateUpdate = function(data){ 
-  this.position.x = data.p.x;
-  this.position.y = data.p.y;
+  this.body.x = data.p.x;
+  this.body.y = data.p.y;
   this.body.rotation = data.p.a;
   this.body.velocity.x = data.v.x;
   this.body.velocity.y = data.v.y;
   this.body.angularVelocity = data.v.a;
   // this.body.acceleration.x = data.a.x;
   // this.bdoy.acceleration.y = data.a.y;
-  // this.state = data;
+  this.state = data;
 }
 
 

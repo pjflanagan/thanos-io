@@ -12,18 +12,22 @@ class ClientSocket {
     });
 
     this.socket.on('death', (data) => self.removeUser(data));
-
     this.socket.on('keyChange', (data) => self.recvKeyChange(data));
+    this.socket.on('stateUpdate', (data) => self.recvStateUpdate(data));
   }
 
   addSelf(data){
-    // console.log('addSelf:', data);
     this.app.addSelf(data);
   }
   
   addUser(data){
-    // console.log("addUser:", data);
     this.app.addUser(data);
+  }
+
+  removeUser(userID){ 
+    // right now data is just the user id but 
+    // it should also have who killed them to keep score
+    this.app.removeUser(userID);
   }
 
   shareSelf(data){
@@ -34,22 +38,21 @@ class ClientSocket {
   }
 
   sendKeyChange(data){
-    // console.log('sendKeyChange:', data);
     this.socket.emit('keyChange', data);
   }
 
   recvKeyChange(data){
-    // console.log('recvKeyChange:', data);
-    // this.app.recvKeyChange(data);
+    this.app.recvKeyChange(data);
   }
 
-  removeUser(userID){ 
-    // right now data is just the user id but 
-    // it should also have who killed them to keep score
-    // console.log("removeUser:", data);
-    this.app.removeUser(userID);
+  sendStateUpdate(data){
+    this.socket.emit('stateUpdate', data);
   }
 
+  recvStateUpdate(data){
+    console.log('recvStateUpdate');
+    this.app.recvStateUpdate(data);
+  }
 	
 }
 

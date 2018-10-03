@@ -13,6 +13,7 @@ class ServerSocket {
 			socket.on('disconnect', () => self.recvDisconnect(socket));
       socket.on('shareSelf', (data) => self.shareSelf(socket, data));
       socket.on('keyChange', (data) => self.keyChange(data));
+      socket.on('stateUpdate', (data) => self.stateUpdate(socket, data));
 		});
   }
   
@@ -33,7 +34,6 @@ class ServerSocket {
 
   // disconnect
 	recvDisconnect(socket) {
-    console.log('disconnect:', socket.id);
     this.room.disconnect(socket);
   }
 
@@ -52,10 +52,17 @@ class ServerSocket {
     socket.to(`${data.to}`).emit('addUser', data.user);
   }
 
+  // state update
+  stateUpdate(socket, data){
+    socket.broadcast.emit('stateUpdate', data);
+  }
+
   // key change
   keyChange(data){
     this.io.emit('keyChange', data);
   }
+
+
 }
 
 export { ServerSocket }

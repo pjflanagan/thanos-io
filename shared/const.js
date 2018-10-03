@@ -15,12 +15,12 @@ const GAME = {
   STONES: ["POWER", "SPACE", "REALITY", "SOUL", "TIME", "MIND"],
   MAX_SHIPS: 30,
   WORLD: {
-    WIDTH: 5000,
-    HEIGHT: 5000
+    WIDTH: 1000,
+    HEIGHT: 1000
   }
 };
 
-const defaultUser = function(userID){
+const defaultUserState = function(userID){
   return {
     i: userID, // id
     p: { // position
@@ -46,4 +46,4 @@ const defaultUser = function(userID){
   };
 }
 
-export { defaultUser, GAME };
+export { defaultUserState, GAME };
