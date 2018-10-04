@@ -1,59 +1,59 @@
 class ClientSocket {
 	constructor(app) {
 		this.socket = io();
-    this.app = app; 
-    const self = this;
+		this.app = app;
+		const self = this;
 
 		this.socket.on('addSelf', (data) => self.addSelf(data));
-    this.socket.on('addUser', (data) => self.addUser(data))
-    this.socket.on('addNewUser', (data) => {
-      self.addUser(data);
-      self.shareSelf(data);
-    });
+		this.socket.on('addUser', (data) => self.addUser(data))
+		this.socket.on('addNewUser', (data) => {
+			self.addUser(data);
+			self.shareSelf(data);
+		});
 
-    this.socket.on('death', (data) => self.removeUser(data));
-    this.socket.on('keyChange', (data) => self.recvKeyChange(data));
-    this.socket.on('stateUpdate', (data) => self.recvStateUpdate(data));
-  }
+		this.socket.on('death', (data) => self.removeUser(data));
+		this.socket.on('keyChange', (data) => self.recvKeyChange(data));
+		this.socket.on('stateUpdate', (data) => self.recvStateUpdate(data));
+	}
 
-  addSelf(data){
-    this.app.addSelf(data);
-  }
-  
-  addUser(data){
-    this.app.addUser(data);
-  }
+	addSelf(data) {
+		this.app.addSelf(data);
+	}
 
-  removeUser(userID){ 
-    // right now data is just the user id but 
-    // it should also have who killed them to keep score
-    this.app.removeUser(userID);
-  }
+	addUser(data) {
+		this.app.addUser(data);
+	}
 
-  shareSelf(data){
-    this.socket.emit('shareSelf', {
-      to: data.i,
-      user: this.app.shareSelf() 
-    }); 
-  }
+	removeUser(userID) {
+		// right now data is just the user id but 
+		// it should also have who killed them to keep score
+		this.app.removeUser(userID);
+	}
 
-  sendKeyChange(data){
-    this.socket.emit('keyChange', data);
-  }
+	shareSelf(data) {
+		this.socket.emit('shareSelf', {
+			to: data.i,
+			user: this.app.shareSelf()
+		});
+	}
 
-  recvKeyChange(data){
-    this.app.recvKeyChange(data);
-  }
+	sendKeyChange(data) {
+		this.socket.emit('keyChange', data);
+	}
 
-  sendStateUpdate(data){
-    this.socket.emit('stateUpdate', data);
-  }
+	recvKeyChange(data) {
+		this.app.recvKeyChange(data);
+	}
 
-  recvStateUpdate(data){
-    console.log('recvStateUpdate');
-    this.app.recvStateUpdate(data);
-  }
-	
+	sendStateUpdate(data) {
+		this.socket.emit('stateUpdate', data);
+	}
+
+	recvStateUpdate(data) {
+		console.log('recvStateUpdate');
+		this.app.recvStateUpdate(data);
+	}
+
 }
 
 export { ClientSocket };
