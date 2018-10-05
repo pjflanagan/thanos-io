@@ -1,3 +1,4 @@
+import { bulletProps } from './bullet.js';
 
 Math.radians = function (degrees) {
 	return degrees * Math.PI / 180; // Converts from degrees to radians
@@ -22,8 +23,6 @@ var Ship = function (app, game, data) {
 	this.app = app;
 	this.game = game;
 
-	// this.liveState = data;
-	// this.tempState = data;
 	this.state = data;
 	this.keys = { u: data.k.u, l: data.k.l, r: data.k.r };
 
@@ -45,7 +44,9 @@ var Ship = function (app, game, data) {
 	let self = this;
 	this.interval = setInterval(() => {
 		self.app.sendStateUpdate();
-	}, 250);
+	}, 500);
+
+	this.fireable = true;
 };
 
 Ship.prototype = Object.create(Phaser.Sprite.prototype);
@@ -127,14 +128,6 @@ Ship.prototype.recvKeyChange = function (keys) {
 	this.state.k = keys;
 }
 
-Ship.prototype.recvStateUpdate = function (data) {
-	this.x = data.p.x;
-	this.y = data.p.y;
-	this.angle = data.p.a;
-	this.body.velocity.x = data.v.x;
-	this.body.velocity.y = data.v.y;
-}
-
 Ship.prototype.shareSelf = function () {
 	return {
 		i: this.state.i,
@@ -175,6 +168,40 @@ Ship.prototype.getState = function () {
 		},
 		h: 100
 	};
+}
+
+Ship.prototype.recvStateUpdate = function (data) {
+	this.x = data.p.x;
+	this.y = data.p.y;
+	this.angle = data.p.a;
+	this.body.velocity.x = data.v.x;
+	this.body.velocity.y = data.v.y;
+}
+
+Ship.prototype.reload = function () {
+	var self = this;
+	this.interval = setTimeout(function () {
+		self.fireable = true;
+	}, bulletProps.interval);
+
+}
+
+Ship.prototype.sendFire = function () {
+	if (!this.fireable)
+		return;
+	this.fireable = false;
+	this.reload();
+
+	let x = this.body.x + this.body.halfWidth;
+	let y = this.body.y + this.body.halfHeight;
+	this.app.sendFire({
+		i: this.state.i,
+		p: {
+			x: x,
+			y: y,
+			a: Math.radians(this.body.rotation)
+		}
+	});
 }
 
 

@@ -14,6 +14,7 @@ class ClientSocket {
 		this.socket.on('death', (data) => self.removeUser(data));
 		this.socket.on('keyChange', (data) => self.recvKeyChange(data));
 		this.socket.on('stateUpdate', (data) => self.recvStateUpdate(data));
+		this.socket.on('fire', (data) => self.recvFire(data));
 	}
 
 	addSelf(data) {
@@ -51,6 +52,14 @@ class ClientSocket {
 
 	recvStateUpdate(data) {
 		this.app.recvStateUpdate(data);
+	}
+
+	sendFire(data) {
+		this.socket.emit('fire', data);
+	}
+
+	recvFire(data) {
+		this.app.recvFire(data);
 	}
 
 }

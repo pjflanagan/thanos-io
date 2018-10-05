@@ -14,6 +14,8 @@ class ServerSocket {
 			socket.on('shareSelf', (data) => self.shareSelf(socket, data));
 			socket.on('keyChange', (data) => self.keyChange(data));
 			socket.on('stateUpdate', (data) => self.stateUpdate(socket, data));
+
+			socket.on('fire', (data) => self.fire(data));
 		});
 	}
 
@@ -60,6 +62,11 @@ class ServerSocket {
 	// key change
 	keyChange(data) {
 		this.io.emit('keyChange', data);
+	}
+
+	// fire
+	fire(data) {
+		this.io.emit('fire', data);
 	}
 
 
