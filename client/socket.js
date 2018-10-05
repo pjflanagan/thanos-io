@@ -50,7 +50,6 @@ class ClientSocket {
 	}
 
 	recvStateUpdate(data) {
-		console.log('recvStateUpdate');
 		this.app.recvStateUpdate(data);
 	}
 

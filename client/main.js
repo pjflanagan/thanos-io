@@ -91,17 +91,17 @@ App.Main.prototype = {
 		});
 	},
 
-	// sendStateUpdate: function () {
-	// 	this.socket.sendStateUpdate(this.self.getState());
-	// },
+	sendStateUpdate: function () {
+		this.socket.sendStateUpdate(this.self.getState());
+	},
 
-	// recvStateUpdate: function (data) {
-	// 	this.ShipGroup.forEach(function (ship) {
-	// 		if (ship.state.i === data.i) {
-	// 			ship.recvStateUpdate(data);
-	// 		}
-	// 	})
-	// },
+	recvStateUpdate: function (data) {
+		this.ShipGroup.forEach(function (ship) {
+			if (ship.state.i === data.i) {
+				ship.recvStateUpdate(data);
+			}
+		})
+	},
 
 	addSelf: function (data) {
 		this.self = new Ship(this, this.game, data);
@@ -110,7 +110,7 @@ App.Main.prototype = {
 	},
 
 	shareSelf: function () {
-		return this.self.getState();
+		return this.self.shareSelf();
 	},
 
 	addUser: function (data) {

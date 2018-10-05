@@ -42,10 +42,10 @@ var Ship = function (app, game, data) {
 	this.body.collideWorldBounds = true;
 	this.body.maxVelocity.set(shipProps.maxVelocity);
 
-	// let self = this;
-	// this.interval = setInterval( () => {
-	//   self.app.sendStateUpdate();
-	// }, 100);
+	let self = this;
+	this.interval = setInterval(() => {
+		self.app.sendStateUpdate();
+	}, 250);
 };
 
 Ship.prototype = Object.create(Phaser.Sprite.prototype);
@@ -62,11 +62,6 @@ Ship.prototype.update = function () {
 
 Ship.prototype.gasOn = function () {
 	this.animations.play('gasOn', 1, true);
-	// this.game.physics.arcade.velocityFromRotation( 
-	//   Math.radians(this.body.rotation), 
-	//   shipProps.maxVelocity, 
-	//   this.body.velocity
-	// );
 	this.game.physics.arcade.accelerationFromRotation(
 		Math.radians(this.body.rotation),
 		shipProps.acceleration,
@@ -76,45 +71,17 @@ Ship.prototype.gasOn = function () {
 
 Ship.prototype.gasOff = function () {
 	this.animations.play('gasOff', 1, true);
-	// this.body.velocity.set(0);
 	this.body.acceleration.set(0);
 }
 
 Ship.prototype.rotate = function (rotation) {
-	this.body.angularVelocity =
-		(.5 - rotation) * shipProps.angularVelocity;
+	this.body.angularVelocity = (.5 - rotation) * shipProps.angularVelocity;
 }
 
 Ship.prototype.death = function () {
 	// animate
 	this.kill();
 };
-
-Ship.prototype.getState = function () {
-	return {
-		i: this.state.i,
-		p: {
-			x: this.body.x,
-			y: this.body.y,
-			a: this.body.rotation
-		},
-		v: { // velocity
-			x: this.body.velocity.x,
-			y: this.body.velocity.y,
-			a: this.body.angularVelocity // cut this data size down by making it 1, 0, or -1
-		},
-		a: {
-			x: this.body.acceleration.x, // acceleration
-			y: this.body.acceleration.y
-		},
-		h: 100, // health this.health (Health is a Phaser property)
-		k: { // keys
-			u: this.state.k.u, // up
-			l: this.state.k.l, // left
-			r: this.state.k.r // right
-		}
-	};
-}
 
 Ship.prototype.sendKeyNoRotation = function () {
 	// use keys here to avoid multiple sends by comparing to state
@@ -161,15 +128,53 @@ Ship.prototype.recvKeyChange = function (keys) {
 }
 
 Ship.prototype.recvStateUpdate = function (data) {
-	this.body.x = data.p.x;
-	this.body.y = data.p.y;
-	this.body.rotation = data.p.a;
+	this.x = data.p.x;
+	this.y = data.p.y;
+	this.angle = data.p.a;
 	this.body.velocity.x = data.v.x;
 	this.body.velocity.y = data.v.y;
-	this.body.angularVelocity = data.v.a;
-	// this.body.acceleration.x = data.a.x;
-	// this.bdoy.acceleration.y = data.a.y;
-	this.state = data;
+}
+
+Ship.prototype.shareSelf = function () {
+	return {
+		i: this.state.i,
+		p: {
+			x: this.x,
+			y: this.y,
+			a: this.angle
+		},
+		v: { // velocity
+			x: this.body.velocity.x,
+			y: this.body.velocity.y,
+			a: this.body.angularVelocity // cut this data size down by making it 1, 0, or -1
+		},
+		a: {
+			x: this.body.acceleration.x, // acceleration
+			y: this.body.acceleration.y
+		},
+		h: 100, // health this.health (Health is a Phaser property)
+		k: { // keys
+			u: this.state.k.u, // up
+			l: this.state.k.l, // left
+			r: this.state.k.r // right
+		}
+	};
+}
+
+Ship.prototype.getState = function () {
+	return {
+		i: this.state.i,
+		p: {
+			x: this.x,
+			y: this.y,
+			a: this.angle
+		},
+		v: { // velocity
+			x: this.body.velocity.x,
+			y: this.body.velocity.y
+		},
+		h: 100
+	};
 }
 
 
